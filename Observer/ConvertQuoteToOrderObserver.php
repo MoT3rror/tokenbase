@@ -43,7 +43,8 @@ class ConvertQuoteToOrderObserver extends ConvertAbstract implements \Magento\Fr
      */
     public function __construct(
         \ParadoxLabs\TokenBase\Helper\Data $helper,
-        \Magento\Framework\App\ResourceConnection $resource
+        \Magento\Framework\App\ResourceConnection $resource,
+        private \Magento\Quote\Model\ResourceModel\Quote\Payment $quotePaymentResource,
     ) {
         $this->helper = $helper;
         $this->resource = $resource;
@@ -71,6 +72,8 @@ class ConvertQuoteToOrderObserver extends ConvertAbstract implements \Magento\Fr
          * Copy fields from quote payment to order payment. If using GraphQL, set tokenbase_id.
          */
         $payment = $quote->getPayment();
+
+        $this->quotePaymentResource->load($payment, $payment->getId());
 
         $paymentAttributes = $payment->getExtensionAttributes();
         if ($paymentAttributes && $paymentAttributes->getTokenbaseId()) {
